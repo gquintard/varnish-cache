@@ -110,12 +110,14 @@ jobs:
             tar cvzf debian.tar.gz debian --dereference
             tar cvzf redhat.tar.gz redhat --dereference
             tar cvzf alpine.tar.gz alpine --dereference
+            tar cvzf arch.tar.gz arch --dereference
       - persist_to_workspace:
           root: .
           paths:
             - debian.tar.gz
             - redhat.tar.gz
             - alpine.tar.gz
+            - arch.tar.gz
   package:
     parameters:
       platform:
@@ -160,8 +162,9 @@ jobs:
             mkdir -p packages
             case "<< parameters.platform >>" in
                 debian:*|ubuntu:*)  EXT=deb ;;
-                centos:*)         EXT=rpm ;;
-                alpine:*)         EXT=apk ;;
+                centos:*)           EXT=rpm ;;
+                alpine:*)           EXT=apk ;;
+                archlinux:*)        EXT=arch ;;
                 *)
                     echo "unrecognized platform: << parameters.platform >>"
                     exit 1
@@ -348,43 +351,43 @@ workflows:
   commit:
     jobs:
       - dist
-      - distcheck:
-          name: distcheck_centos_7
-          dist: centos
-          release: "7"
-      - distcheck:
-          name: distcheck_centos_8
-          dist: centos
-          release: "8"
-      - distcheck:
-          name: distcheck_debian_buster
-          dist: debian
-          release: buster
-          extra_conf: --enable-asan --enable-ubsan --enable-workspace-emulator
-      - distcheck:
-          name: distcheck_ubuntu_bionic
-          dist: ubuntu
-          release: bionic
-          extra_conf: CFLAGS='-g -O2 -m32'
-      - distcheck:
-          name: distcheck_alpine
-          dist: alpine
-          release: "latest"
-          #extra_conf: --without-jemalloc
-      - distcheck:
-          name: distcheck_archlinux
-          dist: archlinux
-          release: base-devel
-  nightly:
-    triggers:
-      - schedule:
-          cron: "0 4 * * *"
-          filters:
-            branches:
-              only:
-                - master
-    jobs:
-      - dist
+#      - distcheck:
+#          name: distcheck_centos_7
+#          dist: centos
+#          release: "7"
+#      - distcheck:
+#          name: distcheck_centos_8
+#          dist: centos
+#          release: "8"
+#      - distcheck:
+#          name: distcheck_debian_buster
+#          dist: debian
+#          release: buster
+#          extra_conf: --enable-asan --enable-ubsan --enable-workspace-emulator
+#      - distcheck:
+#          name: distcheck_ubuntu_bionic
+#          dist: ubuntu
+#          release: bionic
+#          extra_conf: CFLAGS='-g -O2 -m32'
+#      - distcheck:
+#          name: distcheck_alpine
+#          dist: alpine
+#          release: "latest"
+#          #extra_conf: --without-jemalloc
+#      - distcheck:
+#          name: distcheck_archlinux
+#          dist: archlinux
+#          release: base-devel
+#  nightly:
+#    triggers:
+#      - schedule:
+#          cron: "0 4 * * *"
+#          filters:
+#            branches:
+#              only:
+#                - master
+#    jobs:
+#      - dist
       - tar_pkg_tools
       - package:
           name: << matrix.platform >> packages (<< matrix.rclass >>)
@@ -402,9 +405,13 @@ workflows:
                 - centos:7
                 - centos:8
                 - alpine:3
+#                - archlinux:base-devel
               rclass:
                 - arm.medium
                 - medium
+            exclude:
+              - platform: archlinux:base-devel
+                rclass: arm.medium
       - collect_packages:
           requires:
             - package
