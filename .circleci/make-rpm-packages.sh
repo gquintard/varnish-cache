@@ -64,6 +64,7 @@ rpmbuild() {
 
 yum-builddep -y "$DIST_DIR"/redhat/varnish.spec
 rpmbuild -bs "$DIST_DIR"/redhat/varnish.spec
+rpm -qa
 rpmbuild --rebuild "$RESULT_DIR"/varnish-*.src.rpm
 
 echo "Prepare the packages for storage..."
