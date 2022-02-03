@@ -373,16 +373,16 @@ workflows:
           name: distcheck_archlinux
           dist: archlinux
           release: base-devel
-  nightly:
-    triggers:
-      - schedule:
-          cron: "0 4 * * *"
-          filters:
-            branches:
-              only:
-                - master
-    jobs:
-      - dist
+#  nightly:
+#    triggers:
+#      - schedule:
+#          cron: "0 4 * * *"
+#          filters:
+#            branches:
+#              only:
+#                - master
+#    jobs:
+#      - dist
       - tar_pkg_tools
       - package:
           name: << matrix.platform >> packages (<< matrix.rclass >>)
