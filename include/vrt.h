@@ -57,6 +57,8 @@
  * Whenever something is deleted or changed in a way which is not
  * binary/load-time compatible, increment MAJOR version
  *
+ * 22.0 (unpublished)
+ *	VRT_VSC_Alloc() renamed to VRT_VSC_Allocv()
  * 21.0 (2025-03-17)
  *	VRT_u_req_grace() added
  *	VRT_u_req_ttl() added
@@ -822,7 +824,7 @@ struct vsmw_cluster *VRT_VSM_Cluster_New(VRT_CTX, size_t);
 void VRT_VSM_Cluster_Destroy(VRT_CTX, struct vsmw_cluster **);
 
 #ifdef va_start	// XXX: hackish
-void *VRT_VSC_Alloc(struct vsmw_cluster *, struct vsc_seg **,
+void *VRT_VSC_Allocv(struct vsmw_cluster *, struct vsc_seg **,
     const char *, size_t, const unsigned char *, size_t, const char *, va_list);
 #endif
 void VRT_VSC_Destroy(const char *, struct vsc_seg *);
